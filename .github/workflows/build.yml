@@ -1,0 +1,40 @@
+name: Build Qt project on Windows and Linux
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        qt_version: ['6.5.0']  # версия Qt по необходимости
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ matrix.qt_version }}
+          host: ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
+          arch: 'x64'
+
+      - name: Configure build
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            qmake && nmake
+          else
+            qmake && make
+          fi
+
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.os }}
+          path: ./build_output_folder  # замените на путь с собранными файлами
