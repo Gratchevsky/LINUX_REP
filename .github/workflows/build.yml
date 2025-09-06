@@ -1,4 +1,4 @@
-name: Build Qt project on Windows and Linux
+name: Build Qt project for Windows, Ubuntu and Debian aarch64
 
 on:
   push:
@@ -7,24 +7,40 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        qt_version: ['6.5.0']  # версия Qt по необходимости
+        include:
+          - os: windows-latest
+            arch: x64
+            python-version: '3.10'
+          - os: ubuntu-latest
+            arch: x64
+            python-version: '3.10'
+          - os: ubuntu-latest
+            arch: aarch64
+            python-version: '3.10'
+            container: debian:latest
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container || '' }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
-          version: ${{ matrix.qt_version }}
+          version: '6.5.0'
           host: ${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}
-          arch: 'x64'
+          arch: ${{ matrix.arch }}
 
-      - name: Configure build
+      - name: Build project
         shell: bash
         run: |
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
@@ -33,8 +49,8 @@ jobs:
             qmake && make
           fi
 
-      - name: Save build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.os }}
-          path: ./build_output_folder  # замените на путь с собранными файлами
+          name: build-${{ matrix.os }}-${{ matrix.arch }}
+          path: ./build_output_folder  # Укажите путь к вашим собранным файлам
