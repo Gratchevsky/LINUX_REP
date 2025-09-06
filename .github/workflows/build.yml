@@ -55,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}-${{ matrix.arch }}
-          path: ./build_output_folder  # Замените на путь к вашим файлам сборки
+          path: ./Debian_test/build/Desktop_Qt_6_9_1_MinGW_64_bit-Debug # Замените на путь к вашим файлам сборки
