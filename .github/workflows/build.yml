@@ -25,7 +25,6 @@ jobs:
             container: ''
 
     runs-on: ${{ matrix.os }}
-
     container: ${{ matrix.container }}
 
     steps:
@@ -56,4 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}-${{ matrix.arch }}
-          path: ./build_output_folder  # Укажите путь к собранным файлам вашего проекта
+          path: ./build_output_folder  # Замените на путь к вашим файлам сборки
