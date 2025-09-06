@@ -22,11 +22,11 @@ jobs:
           - os: ubuntu-latest
             arch: aarch64
             python-version: '3.10'
-            container: debian:latest
+            container: ''
 
     runs-on: ${{ matrix.os }}
 
-    container: ${{ matrix.container != '' && matrix.container || github.job != 'build' && '' }}
+    container: ${{ matrix.container }}
 
     steps:
       - uses: actions/checkout@v4
@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.os }}-${{ matrix.arch }}
-          path: ./build_output_folder  # Укажите путь к вашим собранным файлам
+          path: ./build_output_folder  # Укажите путь к собранным файлам вашего проекта
